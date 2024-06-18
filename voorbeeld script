@@ -1,0 +1,43 @@
+import datetime, csv
+
+filename = "Bijlage 1.4 - klanten.csv"
+prijzen = {}
+
+def print_factuur(factuur,klantnummer,klantnaam):
+    totaalprijs = 0
+    print("\n\n")
+    print(f"Klantnummer: {klantnummer}")
+    print(f"Klantnaam: {klantnaam}")
+    print(f"Datum: {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}")
+    print("{:<3}\t{:<20}\t{:<10}\t{:<10}".format("Aantal","Productnaam","Prijs per product","Subtotaal"))
+    for key,value in factuur.items():
+        print("{:<6}\t{:<20}\t{:<20}\t{:<10}".format(value,key,prijzen[key],value*prijzen[key]))
+        totaalprijs += value*prijzen[key]
+    print("-"*70)
+    print(f"TOTAALPRIJS:\t\t\t\t\t\t{totaalprijs}")
+
+while True:
+    totaleprijs = 0
+
+    # Welkomstbericht en instructies voor de gebruiker
+    input("Welkom bij de factuurberekening van XYZ Solutions. Druk op enter om te beginnen...")
+
+    with open(filename, mode='r',newline='') as klantenObj:
+        klantenCSV = csv.reader(klantenObj)
+        header = next(klantenCSV)
+        for line in klantenCSV:
+            producten = {}
+            gekochteProducten = line[3].split(', ')
+            for product in gekochteProducten:
+                info = product.split(" ($")
+                productnaam = info[0]
+                productprijs = float(info[1][:-1])
+
+                if productnaam in producten:
+                    producten[productnaam] += 1
+                else:
+                    producten[productnaam] = 1
+
+                if productnaam not in prijzen:
+                    prijzen[productnaam] = productprijs
+            print_factuur(producten,line[0],line[1])
